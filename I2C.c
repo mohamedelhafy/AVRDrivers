@@ -42,6 +42,7 @@ void I2C_vStartToAddress(uint_8 address_R_W)
 {
 	SET_BIT(TWCR,TWEN);//Set the TWI Enable Bit
 	SET_BIT(TWCR,TWSTA);//raise the TWI start bit to send the Start bit in case the bus is available 
+	SET_BIT(TWCR,TWEA);// enable ACK
 	SET_BIT(TWCR,TWINT);//clear the interrupt flag by write one on it
 	 
 	while(IS_BIT_CLEAR(TWCR,TWINT)); //wait till finish and raise the interrupt flag
@@ -105,7 +106,7 @@ void I2C_vRepeatedStartToAddress(uint_8 address_R_W)
 /*********************************************************************************************************/
 void I2C_vSendData(uint_8 data)
 {
-	TWDR=data; //loading data in TWI Data Regester
+	TWDR=data; //loading data in TWI Data Register
 	
 	SET_BIT(TWCR,TWINT); //clear the interrupt flag to start sending
 	
@@ -118,4 +119,48 @@ void I2C_vSendData(uint_8 data)
 		/************************************************************************/
 		I2C_vError();
 	}
+}
+
+
+
+/*********************************************************************************************************/
+/*	Function Name        : I2C_vStop                                                                     */
+/*	Function Returns     : void											                   			     */
+/*	Function Arguments   : void                      								                     */
+/*	Function Description : send stop condition                                                           */
+/*********************************************************************************************************/
+void I2C_vStop(void)
+{
+	SET_BIT(TWCR,TWSTO); // raise the stop frame Enable bit 
+	SET_BIT(TWCR,TWINT); // clear the interrupt flag
+}
+
+
+
+
+
+/*********************************************************************************************************/
+/*	Function Name        : I2C_u8SlaveRead                                                               */
+/*	Function Returns     : unsigned char								                   			     */
+/*	Function Arguments   : void                      								                     */
+/*	Function Description : read the TWDR                                                                 */
+/*********************************************************************************************************/
+uint_8 I2C_u8SlaveRead(void)
+{
+	uint_8 temp=DUMMY_DATA;
+	SET_BIT(TWCR,TWEN);
+	SET_BIT(TWCR,TWEA);
+	SET_BIT(TWCR,TWINT);
+	
+	while(IS_BIT_CLEAR(TWCR,TWINT));
+	if (STATUS_REG==RECEIVE_MY_ADDRESS_AND_WRITE)
+	{
+		SET_BIT(TWCR,TWINT);
+		while(IS_BIT_CLEAR(TWCR,TWINT));
+		if (STATUS_REG==RECEIVE_DATA_AFTER_MY_ADDRESS)
+		{
+			temp=TWDR;
+		}
+	}
+	return temp;
 }

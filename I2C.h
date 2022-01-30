@@ -25,7 +25,9 @@
 
 #define SEND_ADDRESS_READ 0x40
 
+#define RECEIVE_MY_ADDRESS_AND_WRITE 0x60
 
+#define RECEIVE_DATA_AFTER_MY_ADDRESS 0x80
 
 
 
@@ -74,10 +76,22 @@ void I2C_vRepeatedStartToAddress(uint_8 address_R_W);
 void I2C_vSendData(uint_8 data);
 
 
-
+/*********************************************************************************************************/
+/*	Function Name        : I2C_vStop                                                                     */
+/*	Function Returns     : void											                   			     */
+/*	Function Arguments   : void                      								                     */
+/*	Function Description : send stop condition                                                           */
+/*********************************************************************************************************/
 void I2C_vStop(void);
 
 
+
+/*********************************************************************************************************/
+/*	Function Name        : I2C_u8SlaveRead                                                               */
+/*	Function Returns     : unsigned char								                   			     */
+/*	Function Arguments   : void                      								                     */
+/*	Function Description : read the TWDR                                                                 */
+/*********************************************************************************************************/
 uint_8 I2C_u8SlaveRead(void);
 
 
